@@ -1,0 +1,147 @@
+*{
+    box-sizing: border-box;
+}
+
+html, body{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: #C9D6DF;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+
+.topNav {
+    background-color: #333;
+    overflow: hidden;
+    /* position: sticky; */
+    /* display: flex; */
+  }
+  .topNav li{
+    list-style-type: none;
+    /* padding-left: 100px; */
+  }
+  /* Style the links inside the navigation bar */
+  .topNav a {
+    float: left;
+    display: block;
+    color: #C9D6DF;
+    text-align: center;
+    padding: 26px 36px;
+    text-decoration: none;
+    font-size: 17px;
+    /* font-family: 'Lato', sans-serif; */
+  }
+  
+  /* Change the color of links on hover */
+  .topNav a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  /* Add an active class to highlight the current page */
+  .topNav a.active {
+    background-color: #04AA6D;
+    color: white;
+  }
+  
+  /* Hide the link that should open and close the topNav on small screens */
+  .topNav .icon {
+    display: none;
+  }
+  
+  /*Taken from w3 ends */
+  
+#start{
+    /* justify-content: center; */
+    text-align: center;
+    padding:0% 20%;
+    margin:0% 10%;
+    margin-top:5%;
+}
+
+#heading{
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#bylineHead{
+    font-family: 'Roboto',monospace;
+    font-size: medium;
+}
+.container{
+    display: flex;
+}
+
+#movie1{
+    flex:1;
+    width: 50%;
+    padding:10% 10%;
+}
+
+#movie2{
+    width: 50%;
+    flex:1;
+    padding:10% 10%;
+
+}
+
+#movie1img{
+    width:48%;
+    height:auto;
+    justify-content: center ;
+}
+
+#movie2img{
+    width:48%;
+    height:auto;
+    justify-content: center;
+}
+
+
+
+#socials {
+    display: flex;
+    padding: 8% 20%;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+.textColor1{
+    color: #1E2022;
+}
+.bgColor1{
+    background-color: #758996;
+}
+.linkContainer{
+  width: 10%;
+  align-items: center;
+}
+#github{
+  flex:1;
+  width:120%
+}
+ #linkedIn{
+   flex:1;
+   align-self: center;
+   width: 70%;
+ }
+
+ #Instagram{
+  width: 70%;
+  flex:1;
+
+ }
+
+ #Gmail{
+  flex :1;
+  width :120%;
+ }
+
+ 
+ #connectHead{
+    /* font-family:'Montserrat',sans-serif; */
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%; 
+    font-size: 200%;
+   }
