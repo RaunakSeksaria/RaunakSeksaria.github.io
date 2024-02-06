@@ -277,3 +277,24 @@ a:visited {
   width: 100%;
   font-size: 200%;
 }
+
+@media only screen and (max-width:768px){
+  [class*="wrapPfp"]{
+    flex-direction: column;
+  }
+  [id*="edu"]{
+    flex-direction: column;
+  }
+  [id*="acheivements"]{
+    flex-direction: column;
+  }
+  [id*="skills"]{
+    flex-direction: column;
+  }
+  [id*="blog"]{
+    flex-direction: column;
+  }
+  [class*="linkContainer"]{
+    flex-direction: column;
+  }
+}
