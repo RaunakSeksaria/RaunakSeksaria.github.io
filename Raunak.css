@@ -151,7 +151,6 @@ a:visited {
 #differentColorName {
   color: rgb(191, 194, 209);
   color: var(--bgHeader);
-  /* Just for aesthetic, no other reason */
   text-align: justify;
 }
 
