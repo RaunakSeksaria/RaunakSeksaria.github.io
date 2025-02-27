@@ -1,45 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Lato:wght@300;400;700;900&family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
-/* @import "tailwindcss/preflight */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Lato:wght@300;400;700;900&family=Roboto+Mono:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Theme Variables */
 :root {
-    --bgLight1: #F0F5F9;
-    --bgLight2: #C9D6DF;
-    --bgLight3: #adbcc6;
-    --bgLight4: #1E2022;
-    --textLight1: #1E2022;
-    --bgHead: white;
-    --bgHeader: grey;
-    --linkColor: #6b7280;
-    --linkHoverColor: #4b5563;
+    --bgLight1: #f8f9fa;
+    --bgLight2: #e9ecef;
+    --bgLight3: #dee2e6;
+    --bgLight4: #212529;
+    --textLight1: #212529;
+    --bgHead: #ffffff;
+    /* RGB values for opacity support */
+    --bgHeadRGB: 255, 255, 255;
+    --bgHeader: #7048e8;
+    --linkColor: #495057;
+    --linkHoverColor: #343a40;
+    --accentColor: #7048e8;
+    --accentColorLight: #9775fa;
+    --accentColorDark: #5f3dc4;
+    /* RGB values for opacity support */
+    --accentColorRGB: 112, 72, 232;
 }
 
 .dark-mode {
-    --bgLight1: #222831;
-    --bgLight2: #393E46;
-    --bgLight3: #7c7f80;
-    --bgLight4: #EEEEEE;
-    --textLight1: #f1eae3;
-    --bgHead: rgb(8, 8, 8);
-    --bgHeader: rgb(153, 141, 141);
-    --linkColor: #d1d5db;
-    --linkHoverColor: #e5e7eb;
-    transition: transform 0.2s linear;
+    --bgLight1: #121212;
+    --bgLight2: #1e1e1e;
+    --bgLight3: #333333;
+    --bgLight4: #f8f9fa;
+    --textLight1: #f1f3f5;
+    --bgHead: #0a0a0a;
+    /* RGB values for opacity support */
+    --bgHeadRGB: 10, 10, 10;
+    --bgHeader: #845ef7;
+    --linkColor: #dee2e6;
+    --linkHoverColor: #f8f9fa;
+    --accentColor: #845ef7;
+    --accentColorLight: #a78bfa;
+    --accentColorDark: #6741d9;
+    /* RGB values for opacity support */
+    --accentColorRGB: 132, 94, 247;
+    transition: all 0.3s ease;
 }
 
 body {
     background-color: var(--bgLight1);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    transition: transform 0.2s linear;
+    font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    transition: background-color 0.3s ease;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 /* Theme Toggle */
 .checkbox { opacity: 0; }
 .checkbox-label {
-    background-color: #111;
+    background-color: var(--bgLight2);
     width: 50px;
     height: 26px;
     border-radius: 50px;
@@ -49,18 +64,121 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
 }
 .checkbox-label .ball {
-    background-color: #fff;
+    background-color: var(--accentColor);
     width: 22px;
     height: 22px;
     position: absolute;
     left: 2px;
     top: 2px;
     border-radius: 50%;
-    transition: transform 0.2s linear;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .checkbox:checked + .checkbox-label .ball { transform: translateX(24px); }
+
+/* Button Styles */
+.btn-primary {
+    @apply bg-[var(--accentColor)] text-white px-6 py-2.5 rounded-lg font-medium 
+    transition-all duration-300 hover:bg-[var(--accentColorDark)] 
+    focus:outline-none focus:ring-2 focus:ring-[var(--accentColorLight)] 
+    shadow-md hover:shadow-lg flex items-center justify-center gap-2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInFromRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes blink {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--accentColor); }
+}
+
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* Typewriter Effect */
+.typewriter {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+}
+
+.typewriter-text {
+    overflow: hidden;
+    border-right: 0.15em solid var(--accentColor);
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: 
+        typewriter 2s steps(40, end) 1s forwards,
+        blink 0.75s step-end infinite;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 1s ease forwards;
+}
+
+.animate-slideInFromLeft {
+    animation: slideInFromLeft 1s ease forwards;
+}
+
+.animate-slideInFromRight {
+    animation: slideInFromRight 1s ease forwards;
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+.section-container {
+    @apply max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20;
+}
+
+/* Card and section styles */
+.card {
+    @apply bg-white dark:bg-[var(--bgLight2)] rounded-xl shadow-md overflow-hidden 
+    transition-all duration-300 hover:shadow-lg border border-[var(--bgLight3)];
+}
+
+.sticky-nav {
+    @apply fixed top-0 left-0 right-0 backdrop-blur-md shadow-md z-50 transition-all duration-300;
+    background-color: rgba(var(--bgHeadRGB), 0.9);
+}
+
+/* Social Media Links */
+.social-icon-link {
+    @apply flex items-center justify-center p-2 bg-[var(--bgLight2)] rounded-lg hover:bg-[var(--bgLight1)] transition-colors duration-300;
+    width: 60px;
+    height: 60px;
+}
+
+.social-icon-link img {
+    @apply transition-transform duration-300;
+}
+
+.social-icon-link:hover img {
+    transform: scale(1.1);
+}
 
 /* Tailwind Output - Compressed */
 *,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }
