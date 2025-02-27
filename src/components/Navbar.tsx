@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import ThemeSwitcher from './ThemeSwitcher';
 
@@ -26,25 +26,32 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
           &lt;<span className="text-[var(--accentColor)]">rs</span>/&gt;
         </Link>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden text-[var(--bgLight4)] focus:outline-none"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          )}
-        </button>
+        <div className="flex items-center space-x-4 md:hidden">
+          {/* Theme switcher for mobile - always visible */}
+          <div className="flex items-center my-auto">
+            <ThemeSwitcher />
+          </div>
+          
+          {/* Mobile menu button */}
+          <button
+            className="text-[var(--bgLight4)] focus:outline-none"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
+        </div>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center space-x-6">
@@ -78,7 +85,9 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
           >
             Contact
           </Link>
-          <ThemeSwitcher />
+          <div className="flex items-center my-auto">
+            <ThemeSwitcher />
+          </div>
         </nav>
 
         {/* Mobile nav menu */}
@@ -120,9 +129,6 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
               >
                 Contact
               </Link>
-              <div className="pt-2">
-                <ThemeSwitcher />
-              </div>
             </nav>
           </div>
         )}

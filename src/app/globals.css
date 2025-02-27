@@ -40,13 +40,17 @@
     --accentColorDark: #6741d9;
     /* RGB values for opacity support */
     --accentColorRGB: 132, 94, 247;
-    transition: all 0.3s ease;
+}
+
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
     background-color: var(--bgLight1);
+    color: var(--textLight1);
     font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     scroll-behavior: smooth;
     overflow-x: hidden;
 }
@@ -233,3 +237,21 @@ body {
 }
 
 /* Add your custom styles below */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--textLight1);
+    transition: color 0.3s ease;
+}
+
+p, span, div {
+    color: var(--textLight1);
+    transition: color 0.3s ease;
+}
+
+a {
+    color: var(--linkColor);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--linkHoverColor);
+}

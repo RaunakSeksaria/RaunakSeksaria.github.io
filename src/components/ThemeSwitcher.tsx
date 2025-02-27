@@ -1,34 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 const ThemeSwitcher = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
+  // Only show the theme switcher once mounted on the client to avoid hydration mismatch
   useEffect(() => {
-    // Check for saved theme preference or system preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setDarkMode(true);
-      document.documentElement.classList.add('dark-mode');
-    }
+    setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove('dark-mode');
-      localStorage.setItem('theme', 'light');
-    } else {
-      document.documentElement.classList.add('dark-mode');
-      localStorage.setItem('theme', 'dark');
-    }
-    setDarkMode(!darkMode);
-  };
+  if (!mounted) {
+    return <div className="theme-switch-placeholder w-[50px] h-[26px] flex items-center"></div>;
+  }
 
   return (
-    <div className="theme-switch">
+    <div className="theme-switch flex items-center">
       <input
         type="checkbox"
         className="checkbox"
@@ -36,7 +25,7 @@ const ThemeSwitcher = () => {
         checked={darkMode}
         onChange={toggleTheme}
       />
-      <label htmlFor="theme-toggle" className="checkbox-label">
+      <label htmlFor="theme-toggle" className="checkbox-label inline-flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-400">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>

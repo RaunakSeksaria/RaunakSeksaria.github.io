@@ -1,9 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiFileText } from 'react-icons/fi';
+import SocialIcon from './SocialIcon';
+import { socialMediaIcons } from '../data/socialMedia';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    
+    // Using icon-based links instead of image-based
+    const socialLinks = socialMediaIcons;
     
     return (
         <footer className="text-[var(--textLight1)] bg-[var(--bgLight3)] py-8">
@@ -13,62 +18,16 @@ const Footer = () => {
                     <div className="w-full md:w-1/2 mb-6 md:mb-0">
                         <h2 className="font-dancing-script text-2xl md:text-3xl mb-4 text-center md:text-left">Let&apos;s Connect</h2>
                         <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                            <a href="https://github.com/RaunakSeksaria" target="_blank" rel="noopener noreferrer" 
-                               className="social-icon-link">
-                                <Image 
-                                    src="/images/logos/GitHub-Logo.png" 
-                                    alt="Github" 
-                                    width={100} 
-                                    height={48} 
-                                    style={{
-                                        width: 'auto',
-                                        height: '32px',
-                                        objectFit: 'contain'
-                                    }}
+                            {socialLinks.map((social) => (
+                                <SocialIcon
+                                    key={social.name}
+                                    name={social.name}
+                                    url={social.url}
+                                    imagePath={social.imagePath}
+                                    icon={social.icon}
+                                    altText={social.altText}
                                 />
-                            </a>
-                            <a href="https://www.linkedin.com/in/raunak-seksaria-60435a210/" target="_blank" rel="noopener noreferrer" 
-                               className="social-icon-link">
-                                <Image 
-                                    src="/images/logos/linkedIn-logo.webp" 
-                                    alt="LinkedIn" 
-                                    width={100} 
-                                    height={48} 
-                                    style={{
-                                        width: 'auto',
-                                        height: '32px',
-                                        objectFit: 'contain'
-                                    }}
-                                />
-                            </a>
-                            <a href="https://www.instagram.com/raunak_seksaria/" target="_blank" rel="noopener noreferrer" 
-                               className="social-icon-link">
-                                <Image 
-                                    src="/images/logos/Instagram_logo_2016.svg.webp" 
-                                    alt="Instagram" 
-                                    width={100} 
-                                    height={48} 
-                                    style={{
-                                        width: 'auto',
-                                        height: '32px',
-                                        objectFit: 'contain'
-                                    }}
-                                />
-                            </a>
-                            <a href="mailto:seksariaraunak@gmail.com" target="_blank" rel="noopener noreferrer" 
-                               className="social-icon-link">
-                                <Image 
-                                    src="/images/logos/Gmail-logo.png" 
-                                    alt="Gmail" 
-                                    width={100} 
-                                    height={48} 
-                                    style={{
-                                        width: 'auto',
-                                        height: '32px',
-                                        objectFit: 'contain'
-                                    }}
-                                />
-                            </a>
+                            ))}
                         </div>
                     </div>
                     
