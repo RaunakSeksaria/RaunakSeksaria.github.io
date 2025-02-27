@@ -6,15 +6,8 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      fontFamily: {
-        'lato': ['Lato', 'sans-serif'],
-        'roboto-mono': ['Roboto Mono', 'monospace'],
-        'courier-new': ['Courier New', 'Courier', 'monospace'],
-        'dancing-script': ['Dancing Script', 'cursive'],
-      },
-    },
+    extend: {},
   },
   plugins: [],
-}
+};
 
