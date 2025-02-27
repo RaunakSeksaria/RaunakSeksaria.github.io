@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ThemeSwitcher from './ThemeSwitcher';
 
 interface NavbarProps {
@@ -22,8 +23,15 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
   return (
     <header className={`${isScrolled ? 'sticky-nav' : 'bg-[var(--bgHead)]'} py-4 px-4 md:px-8 transition-all duration-300`}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link href="/" className="font-fira-code text-xl md:text-2xl font-bold text-[var(--bgLight4)]">
-          &lt;<span className="text-[var(--accentColor)]">rs</span>/&gt;
+        <Link href="/" className="flex items-center">
+          <Image 
+            src="/images/personal_logo_4.png"
+            alt="Raunak Seksaria Logo"
+            width={40}
+            height={40}
+            className="h-8 md:h-10 w-auto"
+            priority
+          />
         </Link>
 
         <div className="flex items-center space-x-4 md:hidden">
