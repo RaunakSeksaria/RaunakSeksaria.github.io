@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 const CV = () => {
     return (
         <div id="cv" className="text-[var(--textLight1)] bg-[var(--bgLight3)] p-4 md:p-20">

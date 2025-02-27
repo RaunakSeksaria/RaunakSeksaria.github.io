@@ -15,7 +15,7 @@ const Skills = () => {
                     <li>Management :
                         <ul className="list-disc ml-5 space-y-2">
                             <li>Co-Founder of a student-led NPO, Katran Foundation</li>
-                            <li>Leadership Roles at St. James' School:
+                            <li>Leadership Roles at St. James&apos; School:
                                 <ul className="list-disc ml-5 space-y-2">
                                     <li>Student Council Member and School Prefect</li>
                                     <li>Secretary, Mathematics Club</li>
@@ -26,10 +26,10 @@ const Skills = () => {
                             </li>
                             <li>Clubs and Societies at IIIT-H:
                                 <ul className="list-disc ml-5 space-y-2">
-                                    <li>Member, Pentaprism: The Photography Club ('23,'24)</li>
-                                    <li>Member, Programming Club ('24)</li>
-                                    <li>Member, Cyclorama: The Film Club ('24)</li>
-                                    <li>Member, Ping-IIIT: Independent Student Media Body ('24)</li>
+                                    <li>Member, Pentaprism: The Photography Club (&apos;23,&apos;24)</li>
+                                    <li>Member, Programming Club (&apos;24)</li>
+                                    <li>Member, Cyclorama: The Film Club (&apos;24)</li>
+                                    <li>Member, Ping-IIIT: Independent Student Media Body (&apos;24)</li>
                                 </ul>
                             </li>
                         </ul>

@@ -1,11 +1,10 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 const Footer = () => {
     return (
         <div id="socials" className="text-[var(--textLight1)] bg-[var(--bgLight2)] p-4 md:p-20 flex flex-wrap justify-between items-center">
             <div className="w-full md:w-2/3 p-4 md:p-10">
-                <h2 id="ConnectHead" className="w-full font-dancing-script text-2xl md:text-4xl mb-6 text-center md:text-left">Let's Connect</h2>
+                <h2 id="ConnectHead" className="w-full font-dancing-script text-2xl md:text-4xl mb-6 text-center md:text-left">Let&apos;s Connect</h2>
                 <div className="flex flex-wrap justify-between items-center">
                     <a href="https://github.com/RaunakSeksaria" target="_blank" rel="noopener noreferrer" className="w-1/6 flex items-center justify-center p-2">
                         <Image src="/images/logos/GitHub-Logo.png" alt="Github" width={100} height={48} className="max-w-full max-h-12" />

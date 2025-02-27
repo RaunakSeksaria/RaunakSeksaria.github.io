@@ -6,7 +6,7 @@ const Projects = () => {
                 <ul className="list-disc ml-5 space-y-4 text-left">
                     <li>
                         <strong>Full Stack Website for Buy, Sell, Rent on College</strong>
-                        <p>Developed a MERN Stack website as part of the coursework for 'Design and Analysis of Software Systems'</p>
+                        <p>Developed a MERN Stack website as part of the coursework for &apos;Design and Analysis of Software Systems&apos;</p>
                     </li>
                     <li>
                         <strong>Protein Interaction Networks (PINs) Report</strong>
