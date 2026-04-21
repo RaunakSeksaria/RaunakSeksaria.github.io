@@ -1,6 +1,6 @@
 const Achievements = () => {
     return (
-        <div id="achievements" className="text-[var(--textLight1)] bg-[var(--bgLight2)] p-4 md:p-20">
+        <div id="achievements" className="text-[var(--textLight1)] bg-[var(--bgLight3)] p-4 md:p-20">
             <div className="w-full md:w-2/3 p-4 md:p-10">
                 <h2 className="w-full font-dancing-script text-2xl md:text-4xl mb-4 text-center md:text-left">Achievements:</h2>
                 <ul id="AchievementsList" className="space-y-2 list-disc ml-5 text-left">

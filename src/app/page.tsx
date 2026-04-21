@@ -10,6 +10,7 @@ import Achievements from "@/components/sections/Achievements";
 import Footer from "@/components/Footer";
 import Education from "@/components/sections/Education";
 import Contact from "@/components/sections/Contact";
+import Experience from "@/components/sections/Experience";
 
 export default function Home() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -36,6 +37,9 @@ export default function Home() {
         </section>
         <section id="education" className="scroll-mt-20">
           <Education />
+        </section>
+        <section id="experience" className="scroll-mt-20">
+          <Experience />
         </section>
         <section id="achievements" className="scroll-mt-20">
           <Achievements />

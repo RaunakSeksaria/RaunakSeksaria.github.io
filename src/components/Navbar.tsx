@@ -76,6 +76,12 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
             Education
           </Link>
           <Link 
+            href="#experience"
+            className="text-[var(--linkColor)] hover:text-[var(--accentColor)] transition-colors duration-300"
+          >
+            Experience
+          </Link>
+          <Link 
             href="#skills"
             className="text-[var(--linkColor)] hover:text-[var(--accentColor)] transition-colors duration-300"
           >
@@ -115,6 +121,13 @@ const Navbar = ({ isScrolled = false }: NavbarProps) => {
                 onClick={closeMenu}
               >
                 Education
+              </Link>
+              <Link 
+                href="#experience"
+                className="text-[var(--linkColor)] hover:text-[var(--accentColor)] transition-colors duration-300 py-2"
+                onClick={closeMenu}
+              >
+                Experience
               </Link>
               <Link 
                 href="#skills"

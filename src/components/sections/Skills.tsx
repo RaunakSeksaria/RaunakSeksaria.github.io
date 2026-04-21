@@ -1,6 +1,6 @@
 const Skills = () => {
     return (
-        <div id="skills" className="text-[var(--textLight1)] bg-[var(--bgLight3)] p-4 md:p-20">
+        <div id="skills" className="text-[var(--textLight1)] bg-[var(--bgLight2)] p-4 md:p-20">
             <div className="w-full md:w-2/3 p-4 md:p-10">
                 <h2 className="w-full font-dancing-script text-2xl md:text-4xl mb-4 text-center md:text-left">Skills</h2>
                 <ul id="SkillList" className="list-disc ml-5 space-y-4 text-left">
