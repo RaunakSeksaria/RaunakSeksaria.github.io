@@ -36,8 +36,26 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Configure git credentials
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global credential.helper "cache --timeout=900"
+          cat <<EOF | git credential approve
+          protocol=https
+          host=github.com
+          username=x-access-token
+          password=$GITHUB_TOKEN
+          EOF
 
       - name: Build and deploy to gh-pages branch
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run deploy
+
+      - name: Cleanup git credentials
+        if: always()
+        run: |
+          if git config --global --get credential.helper > /dev/null; then
+            git credential-cache exit || true
+            git config --global --unset credential.helper
+          fi
