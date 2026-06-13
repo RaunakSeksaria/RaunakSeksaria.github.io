@@ -26,11 +26,11 @@ const ResumeButton = ({
   
   return (
     <a 
-      href="/Raunak_Seksaria_CV.pdf" 
+      href="/Raunak_Seksaria_Resume.pdf" 
       target="_blank" 
       rel="noopener noreferrer"
       className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      download="Raunak_Seksaria_CV.pdf"
+      download="Raunak_Seksaria_Resume.pdf"
     >
       <FiDownload className="w-5 h-5" />
       <span>Download Resume</span>
