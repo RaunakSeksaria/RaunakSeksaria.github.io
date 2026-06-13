@@ -56,6 +56,6 @@ jobs:
         if: always()
         run: |
           if git config --global --get credential.helper > /dev/null; then
-            git credential-cache exit
+            git credential-cache exit || true
             git config --global --unset credential.helper
           fi
