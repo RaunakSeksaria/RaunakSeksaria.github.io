@@ -46,3 +46,9 @@ jobs:
 
       - name: Build and deploy to gh-pages branch
         run: npm run deploy
+
+      - name: Cleanup git credentials
+        if: always()
+        run: |
+          rm -f ~/.git-credentials
+          git config --global --unset credential.helper || true
