@@ -34,7 +34,7 @@ const Contact = () => {
     
     try {
       // Send email using EmailJS
-      const result = await emailjs.sendForm(
+      await emailjs.sendForm(
         emailjsConfig.serviceId,
         emailjsConfig.templateId,
         formRef.current,
@@ -51,10 +51,9 @@ const Contact = () => {
       
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
-    } catch (error: any) {
-      // More specific error message based on the type of error
-      let errorMessage = 'Failed to send message. Please try again later or contact me directly.';
-      setSubmitError(errorMessage);
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      setSubmitError('Failed to send message. Please try again later or contact me directly.');
     } finally {
       setIsSubmitting(false);
     }
@@ -117,7 +116,7 @@ const Contact = () => {
             </div>
             
             {submitError && (
-              <div className="text-red-500 p-3 bg-red-50 rounded-md">
+              <div className="text-red-500 p-3 bg-[var(--bgLight3)] border border-red-400 rounded-md">
                 <p>{submitError}</p>
                 <p className="text-sm mt-2">
                   If you continue to experience issues, please email me directly at{' '}
