@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { FiFileText } from 'react-icons/fi';
 import SocialIcon from './SocialIcon';
@@ -23,7 +22,6 @@ const Footer = () => {
                                     key={social.name}
                                     name={social.name}
                                     url={social.url}
-                                    imagePath={social.imagePath}
                                     icon={social.icon}
                                     altText={social.altText}
                                 />
