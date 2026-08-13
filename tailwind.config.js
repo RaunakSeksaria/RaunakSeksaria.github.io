@@ -7,33 +7,33 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        'sans': ['Poppins', 'ui-sans-serif', 'system-ui'],
-        'lato': ['Lato', 'sans-serif'],
-        'roboto-mono': ['Roboto Mono', 'monospace'],
-        'dancing-script': ['"Dancing Script"', 'cursive'],
-        'courier-new': ['"Courier New"', 'monospace'],
-        'fira-code': ['"Fira Code"', 'monospace'],
-      },
+      /*
+       * Every colour resolves to a custom property defined twice in
+       * globals.css, under :root and .dark-mode. That is what makes the site
+       * toggle work without Tailwind's `dark:` variant, which would follow the
+       * OS instead of the toggle.
+       */
       colors: {
-        primary: 'var(--accentColor)',
-        'primary-light': 'var(--accentColorLight)',
-        'primary-dark': 'var(--accentColorDark)',
+        canvas: 'var(--bg)',
+        raised: 'var(--raised)',
+        ink: 'var(--text)',
+        dim: 'var(--dim)',
+        faint: 'var(--faint)',
+        rule: 'var(--rule)',
+        accent: 'var(--accent)',
+        add: 'var(--add)',
+        del: 'var(--del)',
+        spine: 'var(--spine)',
       },
-      animation: {
-        fadeIn: 'fadeIn 1s ease-out forwards',
-        slideInLeft: 'slideInFromLeft 1s ease-out forwards',
-        slideInRight: 'slideInFromRight 1s ease-out forwards',
+      fontFamily: {
+        // Both faces come from the `geist` package, self-hosted by next/font.
+        sans: ['var(--font-geist-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
-      transitionProperty: {
-        'height': 'height',
-        'spacing': 'margin, padding',
-      },
-      backdropBlur: {
-        xs: '2px',
+      maxWidth: {
+        prose: '68ch',
       },
     },
   },
   plugins: [],
-}
-
+};

@@ -1,31 +1,7 @@
-import { useEffect, useState } from 'react';
 import ResumeButton from '@/components/ResumeButton';
 import Link from 'next/link';
 
 const Hero = () => {
-    const [typedText, setTypedText] = useState('');
-    const fullText = 'Raunak.';
-    const typingSpeed = 150; // ms per character
-    const startDelay = 500; // ms before typing starts
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            let currentIndex = 0;
-            const typeInterval = setInterval(() => {
-                if (currentIndex <= fullText.length) {
-                    setTypedText(fullText.substring(0, currentIndex));
-                    currentIndex++;
-                } else {
-                    clearInterval(typeInterval);
-                }
-            }, typingSpeed);
-            
-            return () => clearInterval(typeInterval);
-        }, startDelay);
-        
-        return () => clearTimeout(timeout);
-    }, []);
-
     return (
         <div 
             id="beginning" 
