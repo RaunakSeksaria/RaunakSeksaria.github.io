@@ -7,7 +7,7 @@ import type { SpineGroup } from '@/data/timeline';
 import CaseStudyView from '@/components/chrome/CaseStudyView';
 import CommitSpine from '@/components/chrome/CommitSpine';
 import IdentityBar from '@/components/chrome/IdentityBar';
-import StatusBar from '@/components/chrome/StatusBar';
+import CommandLine from '@/components/chrome/CommandLine';
 
 type Params = { slug: string };
 
@@ -50,7 +50,7 @@ export default function WorkPage({ params }: { params: Params }) {
     <>
       <IdentityBar />
 
-      <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 pb-28 sm:px-6">
         <nav aria-label="Breadcrumb" className="mono py-4 text-xs text-dim">
           <Link href="/" className="transition-colors hover:text-accent">
             ~
@@ -84,7 +84,8 @@ export default function WorkPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      <StatusBar context={`~/work/${project.slug}`} />
+      {/* The prompt follows you here; losing it on navigation read as a dead end. */}
+      <CommandLine initialCwd={['work']} />
     </>
   );
 }

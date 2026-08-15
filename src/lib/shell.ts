@@ -11,6 +11,11 @@
 import { profile } from '@/data/profile';
 import { allProjects, casedProjects, featured } from '@/data/projects';
 import { roles } from '@/data/experience';
+import { certifications, coursework, education } from '@/data/education';
+import { openSource, skillGroups } from '@/data/skills';
+import { achievements } from '@/data/achievements';
+import { activities } from '@/data/activities';
+import type { Block } from '@/data/types';
 
 export type Effect =
   | { type: 'none' }
@@ -31,6 +36,8 @@ export type Result = {
 type Node = {
   name: string;
   dir: boolean;
+  /** Other spellings that should resolve here, e.g. the human title. */
+  aliases?: string[];
   /** Spine entry to select when this is `cat`-ed or `cd`-ed into. */
   selectId?: string;
   /** Route to push on `open`. */
@@ -44,9 +51,14 @@ type Node = {
 /* The tree                                                            */
 /* ------------------------------------------------------------------ */
 
+/** Lowercase, punctuation to hyphens, so "Buy, Sell, Rent" finds buy-sell-rent. */
+const slugify = (text: string) =>
+  text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const workChildren: Node[] = allProjects.map((project) => ({
   name: project.slug,
   dir: false,
+  aliases: [slugify(project.title)],
   // Non-featured projects have no spine row of their own; they live in the
   // "other work" pane, so that is what `cat` should surface.
   selectId: featured.some((f) => f.slug === project.slug) ? project.slug : 'other-work',
@@ -78,6 +90,107 @@ const root: Node = {
     { name: 'resume.pdf', dir: false, note: 'download' },
   ],
 };
+
+/* ------------------------------------------------------------------ */
+/* Search index                                                        */
+/* ------------------------------------------------------------------ */
+
+/** Flatten a case study's blocks into plain searchable strings. */
+function blockText(blocks: Block[]): string[] {
+  return blocks.flatMap((block) => {
+    switch (block.kind) {
+      case 'prose':
+      case 'note':
+        return [block.text];
+      case 'bullets':
+        return block.items;
+      case 'pairs':
+        return block.pairs.map(([key, value]) => `${key}: ${value}`);
+      case 'finding':
+        return [block.finding.suspected, block.finding.found];
+      case 'table':
+        return [
+          ...block.table.rows.map((row) => row.join('  ')),
+          ...(block.table.note ? [block.table.note] : []),
+        ];
+      default:
+        return [];
+    }
+  });
+}
+
+/**
+ * Everything grep can see, keyed by the same paths the tree uses so a hit tells
+ * you exactly what to `cat` or `open` next.
+ */
+const searchIndex: { path: string; lines: string[] }[] = [
+  ...allProjects.map((project) => ({
+    path: `work/${project.slug}`,
+    lines: [
+      project.title,
+      project.summary,
+      project.stack.join('  '),
+      ...(project.disclosure ? [project.disclosure] : []),
+      ...project.highlights,
+      ...(project.caseStudy
+        ? [
+            project.caseStudy.problem,
+            ...blockText(project.caseStudy.approach),
+            ...blockText(project.caseStudy.measured),
+            ...blockText(project.caseStudy.surprised),
+            ...project.caseStudy.limitations,
+          ]
+        : []),
+    ],
+  })),
+  ...roles.map((role) => ({
+    path: `experience/${role.id}`,
+    lines: [
+      `${role.title} - ${role.org}`,
+      ...(role.stack ?? []),
+      ...role.bullets,
+      ...(role.finding ? [role.finding.suspected, role.finding.found] : []),
+      ...(role.aside ? [role.aside] : []),
+    ],
+  })),
+  {
+    path: 'education',
+    lines: [
+      ...education.map((item) => `${item.name}, ${item.detail} (${item.results.join(', ')})`),
+      ...certifications.map((item) => `${item.title} - ${item.issuer}`),
+    ],
+  },
+  { path: 'coursework', lines: coursework },
+  {
+    path: 'skills',
+    lines: [
+      ...skillGroups.map((group) => `${group.label}: ${group.items.join('  ')}`),
+      ...openSource.map((item) => `${item.project} ${item.prLabel} ${item.contribution}`),
+    ],
+  },
+  {
+    path: 'achievements',
+    lines: achievements.map((item) =>
+      [item.title, item.result, item.detail, item.issuer].filter(Boolean).join(' - '),
+    ),
+  },
+  {
+    path: 'activities',
+    lines: activities.flatMap((activity) => [
+      `${activity.title}${activity.org ? ` - ${activity.org}` : ''}`,
+      ...activity.bullets,
+    ]),
+  },
+];
+
+/** A window of text around the match, so a hit reads as a result not a path. */
+function snippet(line: string, needle: string): string {
+  const at = line.toLowerCase().indexOf(needle);
+  if (line.length <= 96) return line;
+  const start = Math.max(0, at - 30);
+  const end = Math.min(line.length, start + 96);
+  return `${start > 0 ? '...' : ''}${line.slice(start, end).trim()}${end < line.length ? '...' : ''}`;
+}
 
 /* ------------------------------------------------------------------ */
 /* Paths                                                               */
@@ -120,6 +233,40 @@ function resolve(cwd: Cwd, arg?: string): { segments: string[]; node?: Node } {
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Find a node anywhere in the tree by its bare name.
+ *
+ * `cat` and `open` fall back to this when a path does not resolve against the
+ * current directory. With ten projects nobody thinks in directories, so
+ * `open minicrypt` has to work from anywhere - requiring `cd work` first would
+ * be pedantry rather than fidelity.
+ */
+function findByName(name: string): Node | undefined {
+  // People type the title they can see, not the slug, and they type spaces.
+  const wanted = slugify(name);
+  const queue: Node[] = [...(root.children ?? [])];
+  while (queue.length) {
+    const node = queue.shift() as Node;
+    if (node.name === name || node.name === wanted || node.aliases?.includes(wanted)) {
+      return node;
+    }
+    if (node.children) queue.push(...node.children);
+  }
+  return undefined;
+}
+
+/** Every name in the tree, for suggestions and completion. */
+function allNames(): string[] {
+  const names: string[] = [];
+  const queue: Node[] = [...(root.children ?? [])];
+  while (queue.length) {
+    const node = queue.shift() as Node;
+    names.push(node.name);
+    if (node.children) queue.push(...node.children);
+  }
+  return names;
+}
+
 function distance(a: string, b: string): number {
   const grid = Array.from({ length: a.length + 1 }, (_, i) =>
     Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
@@ -150,12 +297,18 @@ function nearest(word: string, options: string[]): string | undefined {
   return bestScore <= Math.max(2, Math.floor(word.length / 2)) ? best : undefined;
 }
 
-/** Also rendered on the overview, so the interface teaches itself on landing. */
+/**
+ * Also rendered on the overview, so the interface teaches itself on landing.
+ *
+ * The cat/open distinction is the one people trip over, so both descriptions
+ * name what actually happens rather than describing the verb.
+ */
 export const COMMANDS = [
   ['ls', 'list what is here'],
-  ['cd', 'change directory'],
-  ['cat', 'show an entry in the pane'],
-  ['open', 'open a full write-up'],
+  ['cd', 'change directory, e.g. cd work'],
+  ['cat', 'preview an entry in the panel, without leaving this page'],
+  ['open', 'go to the full write-up on its own page, e.g. open minicrypt'],
+  ['grep', 'search everything on this site, e.g. grep pytest'],
   ['pwd', 'print the current path'],
   ['whoami', 'the short version'],
   ['resume', 'download the PDF'],
@@ -221,6 +374,42 @@ export function run(input: string, cwd: Cwd): Result {
     case 'theme':
       return { ...still, lines: [], effect: { type: 'theme' } };
 
+    case 'grep': {
+      const needle = args.join(' ').trim().toLowerCase();
+      if (!needle) {
+        return { ...still, lines: [{ text: 'grep: needs something to look for', tone: 'error' }] };
+      }
+
+      const lines: Line[] = [];
+      let files = 0;
+      let total = 0;
+
+      for (const entry of searchIndex) {
+        const hits = entry.lines.filter((line) => line.toLowerCase().includes(needle));
+        if (!hits.length) continue;
+        total += hits.length;
+        files += 1;
+        if (lines.length < 24) {
+          lines.push({ text: entry.path, tone: 'accent' });
+          for (const hit of hits.slice(0, 2)) {
+            lines.push({ text: `  ${snippet(hit, needle)}` });
+          }
+          if (hits.length > 2) {
+            lines.push({ text: `  and ${hits.length - 2} more here`, tone: 'dim' });
+          }
+        }
+      }
+
+      if (!total) {
+        return { ...still, lines: [{ text: `grep: nothing matches ${needle}`, tone: 'dim' }] };
+      }
+      lines.push({
+        text: `${total} match${total === 1 ? '' : 'es'} across ${files} entr${files === 1 ? 'y' : 'ies'}`,
+        tone: 'dim',
+      });
+      return { ...still, lines };
+    }
+
     case 'ls': {
       const { segments, node } = resolve(cwd, arg);
       if (!node) return { ...still, lines: [{ text: `ls: no such path: ${arg}`, tone: 'error' }] };
@@ -231,8 +420,7 @@ export function run(input: string, cwd: Cwd): Result {
     case 'cd': {
       const { segments, node } = resolve(cwd, arg ?? '~');
       if (!node) {
-        const here = walk(cwd);
-        const suggestion = nearest(arg ?? '', (here?.children ?? []).map((c) => c.name));
+        const suggestion = nearest(arg ?? '', allNames());
         return {
           ...still,
           lines: [
@@ -257,14 +445,14 @@ export function run(input: string, cwd: Cwd): Result {
 
     case 'cat': {
       if (!arg) return { ...still, lines: [{ text: 'cat: needs a name', tone: 'error' }] };
-      const { node } = resolve(cwd, arg);
+      const query = args.join(' ');
+      const node = resolve(cwd, arg).node ?? findByName(query);
       if (!node) {
-        const here = walk(cwd);
-        const suggestion = nearest(arg, (here?.children ?? []).map((c) => c.name));
+        const suggestion = nearest(slugify(query), allNames());
         return {
           ...still,
           lines: [
-            { text: `cat: no such entry: ${arg}`, tone: 'error' },
+            { text: `cat: no such entry: ${query}`, tone: 'error' },
             ...(suggestion ? [{ text: `did you mean ${suggestion}?`, tone: 'dim' as const }] : []),
           ],
         };
@@ -282,13 +470,18 @@ export function run(input: string, cwd: Cwd): Result {
 
     case 'open': {
       if (!arg) return { ...still, lines: [{ text: 'open: needs a name', tone: 'error' }] };
-      const { node } = resolve(cwd, arg);
+      const query = args.join(' ');
+      const node = resolve(cwd, arg).node ?? findByName(query);
       if (!node?.href) {
+        const suggestion = nearest(slugify(query), allNames());
         return {
           ...still,
           lines: [
-            { text: `open: nothing written up for ${arg}`, tone: 'error' },
-            { text: 'try: ls work', tone: 'dim' },
+            { text: `open: no write-up for ${query}`, tone: 'error' },
+            {
+              text: suggestion ? `did you mean ${suggestion}?` : 'try: ls work',
+              tone: 'dim',
+            },
           ],
         };
       }
@@ -333,7 +526,13 @@ export function complete(input: string, cwd: Cwd): { value: string; candidates: 
 
   const { node } = resolve(cwd, dirPart || '.');
   const names = (node?.children ?? []).map((child) => child.name + (child.dir ? '/' : ''));
-  const matches = names.filter((name) => name.startsWith(namePart));
+  let matches = names.filter((name) => name.startsWith(namePart));
+
+  // cat and open resolve names from anywhere, so completion has to as well,
+  // otherwise tab contradicts what the command will happily accept.
+  if (!matches.length && !dirPart && (parts[0] === 'cat' || parts[0] === 'open')) {
+    matches = allNames().filter((name) => name.startsWith(namePart));
+  }
 
   if (matches.length === 1) {
     const head = parts.slice(0, -1).join(' ');

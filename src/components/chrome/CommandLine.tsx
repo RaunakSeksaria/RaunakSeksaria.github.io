@@ -7,9 +7,15 @@ import { complete, formatCwd, run, type Cwd, type Line } from '@/lib/shell';
 import { BarActions, type Position } from './StatusBar';
 
 type Props = {
-  /** Selecting a spine entry is owned by Browser; the shell just asks. */
-  onSelect: (id: string) => void;
+  /**
+   * Selecting a spine entry is owned by Browser; the shell just asks. Absent on
+   * a case-study page, where there is no spine to drive - there `cat` navigates
+   * back to the index anchored on that entry instead.
+   */
+  onSelect?: (id: string) => void;
   position?: Position;
+  /** Case-study pages start you in ~/work, since that is where you are. */
+  initialCwd?: Cwd;
 };
 
 /**
@@ -19,8 +25,8 @@ type Props = {
  * equivalent that already exists in the spine, so the page stays complete for
  * someone who never types, and stays static HTML for a crawler.
  */
-export default function CommandLine({ onSelect, position }: Props) {
-  const [cwd, setCwd] = useState<Cwd>([]);
+export default function CommandLine({ onSelect, position, initialCwd = [] }: Props) {
+  const [cwd, setCwd] = useState<Cwd>(initialCwd);
   const [value, setValue] = useState('');
   const [output, setOutput] = useState<Line[]>([]);
   const [history, setHistory] = useState<string[]>([]);
@@ -47,7 +53,8 @@ export default function CommandLine({ onSelect, position }: Props) {
 
       switch (result.effect.type) {
         case 'select':
-          onSelect(result.effect.id);
+          if (onSelect) onSelect(result.effect.id);
+          else router.push(`/#${result.effect.id}`);
           break;
         case 'navigate':
           router.push(result.effect.href);

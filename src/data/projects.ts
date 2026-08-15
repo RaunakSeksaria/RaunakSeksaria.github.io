@@ -398,8 +398,69 @@ const catalogue: Project[] = [
     repoUrl: 'https://github.com/RaunakSeksaria/C-Shell',
     stack: ['C99', 'POSIX', 'pytest', 'pexpect', 'gcc -fanalyzer'],
     summary:
-      'A tokenize-parse-execute POSIX shell with pipelines, I/O redirection, sequencing and background execution. 12+ commands and sub-commands across 8 built-ins cover directory navigation, listing, job control, signal delivery and on-disk history. 82+ tests drive a real PTY through pexpect, and every source file is kept clean under gcc -fanalyzer with -Werror.',
-    highlights: [],
+      'A POSIX shell in C built as tokenize, parse, then execute: pipelines, I/O redirection, sequencing, background jobs and signal handling, with the whole thing driven in tests through a real pseudo-terminal.',
+    highlights: [
+      'Implemented 12+ commands and sub-commands across 8 built-ins, covering directory navigation, listing, job control, signal delivery and on-disk history.', // dispatch chain, src/execute.c:177-198
+      'Wired pipelines by forking one child per stage and connecting them with dup2, with redirection resolved before exec so the child starts with the right descriptors.',
+      'Caught SIGINT and SIGTSTP in the shell and forwarded them to the foreground job rather than dying, which is the part that makes it usable interactively.',
+    ],
+    caseStudy: {
+      problem:
+        'A shell is a small program with an unusually large surface: every feature is a place where a process, a file descriptor or a signal can be left in the wrong state. Getting it to work once is easy; getting it to stay correct while you add pipelines and job control is the actual exercise.',
+      approach: [
+        {
+          kind: 'prose',
+          text:
+            'The pipeline is literal: input is tokenized, parsed into commands split on sequencing and pipes, then executed. Keeping those three phases apart is what stops redirection, backgrounding and piping from turning into one tangled special case, since each phase only has to know about its own grammar.',
+        },
+        {
+          kind: 'bullets',
+          items: [
+            'Built-ins dispatch from a single chain: directory navigation with a cd alias, listing, history, job listing, foreground and background, signal delivery and help.',
+            'Redirection handles <, > and >>, with the last of a given kind winning, applied with dup2 onto the standard descriptors.',
+            'Sequencing splits on ; and a trailing & marks the command as background, so job control and sequencing are parse-time concerns rather than execution-time ones.',
+            'History is file-backed and capped, so it survives across sessions.',
+            'There is deliberately no exit built-in: the shell ends on EOF, the same way a real one does.',
+          ],
+        },
+      ],
+      measured: [
+        {
+          kind: 'table',
+          table: {
+            columns: ['Property', 'Value'],
+            rows: [
+              ['Built-ins', '8, plus a cd alias'],
+              ['Integration tests', '82+, each on a real PTY'],
+              ['Source files', '15 .c and .h pairs'],
+              ['Warnings', '-Wall -Wextra -Werror'],
+              ['Static analysis', 'gcc -fanalyzer over every source'],
+            ],
+            numeric: [1],
+            note:
+              'Tests drive the shell through pexpect on a pseudo-terminal rather than by piping into stdin, which is the only way to exercise job control and signal forwarding honestly. Some assert on stdout and stderr separately.',
+          },
+        },
+        {
+          kind: 'note',
+          text: 'No CI runs any of this; `make check` is a local gate, not a hosted one.',
+        },
+      ],
+      surprised: [
+        {
+          kind: 'finding',
+          finding: {
+            suspected: 'compiling clean under -Wall -Wextra -Werror meant the memory handling was sound',
+            found:
+              'the static analyzer disagreed at every allocation site. It cannot know that a malloc succeeded, so each one became a possible null dereference downstream. Funnelling all allocation through abort-on-out-of-memory wrappers marked as never returning null gave the analyzer the fact it was missing, and the tree went quiet.',
+          },
+        },
+      ],
+      limitations: [
+        'A teaching shell, not a login shell: no job control beyond foreground and background, no scripting language, no completion.',
+        'No CI, so the analyzer and test gates only run when someone remembers to run them.',
+      ],
+    },
   },
   {
     slug: 'reliable-udp',
@@ -407,8 +468,67 @@ const catalogue: Project[] = [
     repoUrl: 'https://github.com/RaunakSeksaria/Networking',
     stack: ['C99', 'UDP sockets', 'libpcap', 'BPF', 'select()'],
     summary:
-      'Two projects. S.H.A.M. is a connection-oriented byte stream over UDP with a three-way handshake, four-way teardown, cumulative byte ACKs, a 10-packet sliding window and 500 ms per-packet retransmission timers - per-packet rather than Go-Back-N, so recovering one loss does not resend the tail. C-Shark is a libpcap sniffer decoding Ethernet, IPv4, IPv6, ARP, TCP and UDP with BPF filters and hex-dump inspection.', // SLIDING_WINDOW_SIZE 10, RTO_TIMEOUT_MS 500 - sham.h:30-31
-    highlights: [],
+      'Two halves of the same question. S.H.A.M. rebuilds a reliable, connection-oriented byte stream on top of UDP; C-Shark is a libpcap sniffer that decodes the frames going past, so you can watch the first one actually work.',
+    highlights: [
+      'Built a byte-oriented transport with a three-way handshake, four-way teardown and cumulative acknowledgements, where sequence numbers count bytes rather than packets.', // sham.h:13, README:51-52
+      'Recovered loss with a 10-packet sliding window and 500 ms per-packet retransmission timers, so one lost packet costs one retransmission rather than the whole window.', // SLIDING_WINDOW_SIZE 10, RTO_TIMEOUT_MS 500 - sham.h:30-31
+      'Wrote a libpcap sniffer decoding Ethernet, IPv4, IPv6, ARP, TCP and UDP, with BPF filters and hex-dump inspection of the raw frame.',
+    ],
+    caseStudy: {
+      problem:
+        'UDP gives you datagrams that may vanish, duplicate or arrive out of order. Turning that into something a file transfer can trust means rebuilding, by hand, the parts of TCP that usually come for free: connection setup, ordering, acknowledgement, retransmission and flow control.',
+      approach: [
+        {
+          kind: 'prose',
+          text:
+            'The header is twelve bytes: sequence number, acknowledgement number, flags and an advertised window. Sequence numbers count bytes of the stream rather than packets, and acknowledgements are cumulative and name the next byte expected, which is the same contract TCP offers and it makes the receiver logic much simpler than per-packet accounting would.',
+        },
+        {
+          kind: 'bullets',
+          items: [
+            'A three-way handshake opens the connection and a four-way teardown closes it, with SYN, ACK and FIN as flag bits.',
+            'The sender may have ten packets outstanding at once, each with its own retransmission timer, and buffers out-of-order arrivals at the receiver rather than discarding them.',
+            'Chat mode multiplexes the socket and standard input through select(), so typing and receiving do not block each other.',
+            'The sniffer opens the interface non-blocking and selects over both the capture descriptor and stdin, so it can be exited cleanly mid-capture instead of needing a signal.',
+          ],
+        },
+      ],
+      measured: [
+        {
+          kind: 'table',
+          table: {
+            columns: ['Parameter', 'Value'],
+            rows: [
+              ['Sliding window', '10 packets'],
+              ['Retransmission timeout', '500 ms, per packet'],
+              ['Data chunk', '1024 B'],
+              ['Retries before giving up', '5'],
+              ['Header', '12 B'],
+              ['Sniffer capture buffer', '10,000 packets, deep-copied'],
+            ],
+            numeric: [1],
+            note:
+              'All constants read from sham.h rather than from the write-up. There is no throughput or loss-recovery benchmark in the repo, so no performance figure is quoted here.',
+          },
+        },
+      ],
+      surprised: [
+        {
+          kind: 'finding',
+          finding: {
+            suspected:
+              'Go-Back-N was the natural design: on a timeout, resend everything from the lost packet onward',
+            found:
+              'a cumulative acknowledgement already tells you which packets arrived, even the ones after the gap. Giving every packet its own timer and retiring it when an acknowledgement covers its range means a single loss costs a single retransmission instead of the entire window behind it.',
+          },
+        },
+      ],
+      limitations: [
+        'The receiver-advertised window is only computed on the file-transfer receive path; the handshake, chat and acknowledgement paths advertise a fixed value.',
+        'IPv6 extension headers are decoded one level deep and not followed further.',
+        'Tests are shell scripts that generate traffic, not assertions, and there is no CI.',
+      ],
+    },
   },
   {
     slug: 'ews-financial-networks',
