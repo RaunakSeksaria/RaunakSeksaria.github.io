@@ -464,6 +464,39 @@ const catalogue: Project[] = [
           text:
             'The transition itself is sharp rather than gradual. The giant component holds at full connectivity across a wide pre-critical range and then collapses discontinuously, and the derivative of the order parameter spikes at exactly that point.',
         },
+        {
+          kind: 'table',
+          table: {
+            columns: ['Predictor metric', 'Value'],
+            rows: [
+              ['R²', '0.209'],
+              ['MAE', '0.038'],
+              ['RMSE', '0.048'],
+              ['Pearson r', '0.713'],
+              ['Spearman ρ', '0.663'],
+              ['Within ±0.02 of true', '35.2%'],
+              ['Within ±0.05 of true', '71.2%'],
+              ['Test windows', '1049'],
+            ],
+            numeric: [1],
+            note: 'From the committed liquidity/eval_metrics.json, on a simulation-level split so no window from a training simulation appears in the test set. The ranking correlations are the honest headline here: the model orders simulations by fragility far better than it pins the exact value, and roughly seven in ten predictions land within 0.05 of the true critical funding cost.', // liquidity/eval_metrics.json
+          },
+        },
+        {
+          kind: 'table',
+          table: {
+            columns: ['Lead distance', 'MAE'],
+            rows: [
+              ['0.70', '0.0388'],
+              ['0.80', '0.0388'],
+              ['0.90', '0.0411'],
+              ['0.95', '0.0357'],
+              ['0.98', '0.0338'],
+            ],
+            numeric: [0, 1],
+            note: 'Error against how far ahead of the transition the observation window sits. It stays flat rather than degrading as the window moves earlier, which is the property that makes it an early warning rather than a late detector.', // liquidity/eval_metrics.json, mae_by_lead
+          },
+        },
       ],
       surprised: [
         {
@@ -487,20 +520,121 @@ const catalogue: Project[] = [
     slug: 'buy-sell-rent',
     title: 'Buy, Sell, Rent platform',
     repoUrl: 'https://github.com/RaunakSeksaria/Buy_Sell_Rent_iiit',
-    stack: ['Next.js', 'Tailwind CSS', 'Express.js', 'MongoDB'],
+    stack: ['Next.js', 'TypeScript', 'Express', 'MongoDB', 'Mongoose'],
+    disclosure:
+      'Course project for Design and Analysis of Software Systems at IIIT Hyderabad.',
     summary:
-      'A full-stack platform for intra-college transactions - listing, buying, selling and renting items within the campus.',
-    highlights: [],
+      'A campus marketplace for buying, selling and renting items between students, with institutional single sign-on, an order lifecycle that needs both parties to agree, and a chatbot on the support page.',
+    highlights: [
+      'Built twelve routes across the App Router frontend, from search and item pages through cart, sell, orders and delivery to profile and support.',
+      'Modelled the domain as Item, Order and User, with route modules and an auth middleware separating concerns on the Express side.',
+      'Authenticated against the institute CAS single sign-on alongside JWT sessions and bcrypt-hashed local accounts.',
+    ],
+    caseStudy: {
+      problem:
+        'A campus marketplace has a trust problem that a public one does not: buyers and sellers already share an institution, so the interesting work is not payments but proving who someone is and making a handover between two students verifiable.',
+      approach: [
+        {
+          kind: 'prose',
+          text:
+            'The frontend is Next.js with the App Router in TypeScript; the backend is a separate Express service in TypeScript over MongoDB through Mongoose, so the two halves deploy and reason independently. Three models carry the whole domain: User, Item and Order.',
+        },
+        {
+          kind: 'bullets',
+          items: [
+            'Identity leans on the institute CAS single sign-on rather than a bespoke account system, with JWT sessions and bcrypt for the local path.',
+            'The order lifecycle is deliberately two-sided: a seller marks an item delivered and the buyer confirms, so neither party can close a transaction alone.',
+            'Twelve page routes cover the full loop: search and item, sell, cart, orders, deliver_items, profile, support, login and signup.',
+            'The support page is backed by its own chatbot route rather than a static FAQ.',
+          ],
+        },
+      ],
+      measured: [
+        {
+          kind: 'pairs',
+          pairs: [
+            ['Frontend', 'Next.js App Router, TypeScript, 12 page routes'],
+            ['Backend', 'Express + TypeScript, 4 route modules, auth middleware'],
+            ['Data', 'MongoDB via Mongoose; User, Item and Order models'],
+            ['Auth', 'CAS single sign-on, JWT sessions, bcrypt'],
+          ],
+        },
+        {
+          kind: 'note',
+          text: 'No test suite and no CI in this repo, so nothing here is quoted as a measured figure.',
+        },
+      ],
+      surprised: [
+        {
+          kind: 'prose',
+          text:
+            'The part that took the most care was not any single feature but the seam between two services that disagree about who the user is. CAS hands back an institutional identity while the application wants its own session and its own user record, so every protected route has to reconcile the two before it can answer.',
+        },
+      ],
+      limitations: [
+        'Coursework rather than a deployed product: there is no hosting, no payment handling and no dispute process.',
+        'No automated tests, so behaviour is verified by using it.',
+        'CAS ties the login path to one institution, which is the point here but would need replacing anywhere else.',
+      ],
+    },
   },
   {
     slug: 'computational-modelling',
     title: 'Computational modelling of scientific problems',
     repoUrl:
       'https://github.com/RaunakSeksaria/Computational-modelling-of-scientific-problems',
-    stack: ['Python', 'NumPy', 'Matplotlib'],
+    stack: ['Python', 'NumPy', 'Matplotlib', 'SymPy', 'Jupyter'],
+    disclosure:
+      'Coursework for Computing in Sciences II at IIIT Hyderabad, plus a protein visualisation report from Biomolecular Structures.',
     summary:
-      'Random walks, prey-predator systems, logistic-map steady-state analysis, Monte-Carlo evaluation of multi-dimensional integrals, Fourier analysis built from complex epicycles, and protein visualisation.',
-    highlights: [],
+      'Seven scientific problems worked from the mathematics up in Python notebooks, from the statistics of a coin toss through Monte Carlo integration and Fourier epicycles to protein structure visualisation.',
+    highlights: [
+      'Derived and simulated coin-toss statistics and random walks against the Gaussian and Poisson limits, and the Cramér large-deviation result.',
+      'Evaluated integrals by Monte Carlo, including importance sampling rather than uniform sampling alone.',
+      'Reconstructed 1D periodic functions and 2D closed curves as sums of rotating epicycles from their Fourier coefficients.',
+    ],
+    caseStudy: {
+      problem:
+        'Scientific computing is easy to fake: call a library, plot the output, move on. The point of this set was the opposite, taking problems where the analytical result is known and building the numerics until they agree with it.',
+      approach: [
+        {
+          kind: 'bullets',
+          items: [
+            'Coin tosses and random walks, checked against the Gaussian and Poisson limits and the Cramér large-deviation theorem.',
+            'Monte Carlo integration, both simple and with importance sampling, where the comparison between the two is the lesson.',
+            'Fourier analysis expressed as epicycles, reconstructing 1D periodic functions and tracing 2D closed curves from their coefficients.',
+            'The prey-predator system as an exercise in nonlinear dynamics, and the logistic map through its phase plot and polynomial roots.',
+            'Balancing chemical equations by solving for stoichiometric coefficients rather than by inspection.',
+            'Protein structure visualisation in VMD driven by TCL from the Tk console, including an AlphaFold3 prediction for a generated sequence.',
+          ],
+        },
+      ],
+      measured: [
+        {
+          kind: 'pairs',
+          pairs: [
+            ['Topics', '7, each as a self-contained notebook'],
+            ['Tools', 'Python, NumPy, Matplotlib, SymPy, Jupyter'],
+            ['Beyond Python', 'VMD with TCL scripting, AlphaFold3'],
+          ],
+        },
+        {
+          kind: 'note',
+          text: 'A coursework collection rather than an engineered artefact, so it carries no benchmarks, tests or CI, and none are claimed.',
+        },
+      ],
+      surprised: [
+        {
+          kind: 'prose',
+          text:
+            'Fourier analysis is normally taught as an equation and a spectrum. Rendering the same coefficients as a chain of rotating circles that traces out an arbitrary closed curve makes the claim of the transform visible in a way the algebra does not, and it is the piece from this set that has stayed most useful since.',
+        },
+      ],
+      limitations: [
+        'Coursework: the problems come with known answers, which is the point but also the ceiling.',
+        'Notebooks rather than reusable modules, so nothing here is packaged for import.',
+      ],
+    },
   },
 ];
 

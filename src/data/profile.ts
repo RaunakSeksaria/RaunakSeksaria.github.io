@@ -14,6 +14,15 @@ export const profile = {
    */
   statement:
     'coding is cool. nerd that loves building stuff, because I am cool :)',
+  /**
+   * The "now" block on the overview. Drafted from the role data below - only
+   * Raunak can say what is actually current, so edit this freely. Deliberately
+   * says nothing about availability; add that line only if you want it public.
+   */
+  now: [
+    'Undergraduate researcher at CCNSB, IIIT-H, on geopolitical networks and how countries cluster into blocs.',
+    'Lately: a zero-allocation bytecode VM in C++20, and a distributed file system in C with replication and failover.',
+  ],
   emails: [
     'seksariaraunak@gmail.com',
     'raunak.seksaria@research.iiit.ac.in',

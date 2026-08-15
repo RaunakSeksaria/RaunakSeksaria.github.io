@@ -43,7 +43,8 @@
 html {
     background-color: var(--bg);
     /* The status bar is fixed; keep anchored content clear of it. */
-    scroll-padding-bottom: 4rem;
+    /* The fixed bar carries the command prompt as well as the status row. */
+    scroll-padding-bottom: 7rem;
 }
 
 body {

@@ -68,14 +68,19 @@ function SpineRow({
           className={`text-sm leading-snug ${selected ? 'text-accent' : 'text-ink'}`}
         >
           {entry.label}
+          {/*
+            The arrow lives inside the label rather than beside it, joined by a
+            non-breaking space. As a sibling flex item it became its own line
+            whenever a long title wrapped; this keeps it pinned to the last word.
+          */}
+          {entry.href && (
+            <span aria-hidden="true" className="mono text-[11px] text-faint">
+              &nbsp;&rarr;
+            </span>
+          )}
         </span>
         {entry.meta && (
           <span className="mono text-[11px] text-faint">{entry.meta}</span>
-        )}
-        {entry.href && (
-          <span aria-hidden="true" className="mono text-[11px] text-faint">
-            &rarr;
-          </span>
         )}
       </span>
     </>

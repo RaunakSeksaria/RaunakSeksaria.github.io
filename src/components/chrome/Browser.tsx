@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import { spine, spineOrder } from '@/data/timeline';
+import CommandLine from './CommandLine';
 import CommitSpine from './CommitSpine';
 import DiffPane from './DiffPane';
 import IdentityBar from './IdentityBar';
-import StatusBar from './StatusBar';
 import { useSpineKeys } from './useSpineKeys';
 
 const DESKTOP = '(min-width: 1024px)';
@@ -29,7 +29,6 @@ export default function Browser() {
     0,
     spineOrder.findIndex((entry) => entry.id === selectedId),
   );
-  const selected = spineOrder[selectedIndex];
 
   const handleSelect = useCallback((id: string) => {
     setSelectedId(id);
@@ -67,9 +66,9 @@ export default function Browser() {
     <>
       <IdentityBar />
 
-      <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 pb-28 sm:px-6">
         <div className="lg:grid lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-10">
-          <div className="pane-scroll border-b border-rule py-5 lg:sticky lg:top-[49px] lg:h-[calc(100vh-7rem)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:pr-6">
+          <div className="pane-scroll border-b border-rule py-5 lg:sticky lg:top-[49px] lg:h-[calc(100vh-10rem)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:pr-6">
             <CommitSpine groups={spine} selectedId={selectedId} onSelect={handleSelect} />
           </div>
 
@@ -90,10 +89,14 @@ export default function Browser() {
         </div>
       </div>
 
-      <StatusBar
-        context={`~/${selected.id}`}
+      {/*
+        The command line is the bottom bar here. There is deliberately no second
+        status row: the prompt already shows where you are, and two competing
+        path indicators stacked on each other read as a conflict.
+      */}
+      <CommandLine
+        onSelect={handleSelect}
         position={{ index: selectedIndex + 1, total: spineOrder.length }}
-        showKeyHints
       />
     </>
   );

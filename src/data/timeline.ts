@@ -38,7 +38,8 @@ const roleMeta: Record<string, { children: string[] }> = {
   'parent-diaries': { children: ['team of 4 · Whisper · Socket.IO'] },
 };
 
-const featuredHooks: Record<string, string[]> = {
+/** Also rendered on the overview, so both stay in step. */
+export const featuredHooks: Record<string, string[]> = {
   'shared-file-system': ['46 integration tests, ASan in CI'],
   'bytecode-engine': ['~30× a tree-walker, zero allocations'],
   'ews-financial-networks': ['where an interbank market fragments'],

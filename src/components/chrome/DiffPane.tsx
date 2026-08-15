@@ -7,8 +7,10 @@ import { skillGroups, openSource } from '@/data/skills';
 import { achievements } from '@/data/achievements';
 import { activities } from '@/data/activities';
 import { socialMediaIcons } from '@/data/socialMedia';
-import type { View } from '@/data/timeline';
+import { featuredHooks, type View } from '@/data/timeline';
+import { COMMANDS } from '@/lib/shell';
 import { BlockList, Finding, SectionHead, StackLine } from './Blocks';
+import ContactForm from './ContactForm';
 
 /** Title row for a pane: heading, dim meta, optional outbound link. */
 function PaneHeader({
@@ -70,20 +72,75 @@ export default function DiffPane({ view }: { view: View }) {
           <p className="prose-block text-[15px] leading-relaxed">{profile.statement}</p>
 
           <div>
-            <SectionHead label="at a glance" />
-            <dl className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-              <div>
-                <dt className="mono text-[11px] uppercase tracking-wider text-faint">
-                  degree
-                </dt>
-                <dd className="mt-0.5 text-sm">{profile.degree}</dd>
-              </div>
-              <div>
-                <dt className="mono text-[11px] uppercase tracking-wider text-faint">
-                  based in
-                </dt>
-                <dd className="mt-0.5 text-sm">{profile.location}</dd>
-              </div>
+            <SectionHead label="now" />
+            <ul className="mt-3 space-y-1.5">
+              {profile.now.map((item) => (
+                <li key={item} className="flex gap-2.5">
+                  <span aria-hidden="true" className="mono select-none text-faint">
+                    &#9702;
+                  </span>
+                  <span className="prose-block text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mono mt-2 text-xs text-faint">{profile.location}</p>
+          </div>
+
+          <div>
+            <SectionHead label="featured work" />
+            <ul className="mt-3 space-y-3">
+              {featured.map((project) => (
+                <li key={project.slug}>
+                  <Link
+                    href={`/work/${project.slug}/`}
+                    className="group block transition-colors"
+                  >
+                    <span className="text-sm text-ink transition-colors group-hover:text-accent">
+                      {project.title}
+                    </span>
+                    <span className="mono ml-2 text-[11px] text-faint">
+                      {project.stack.slice(0, 3).join(' · ')}
+                    </span>
+                  </Link>
+                  {featuredHooks[project.slug]?.map((hook) => (
+                    <p key={hook} className="mono mt-0.5 text-xs text-dim">
+                      {hook}
+                    </p>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <SectionHead label="skills" />
+            <dl className="mt-3 space-y-2">
+              {skillGroups.map((group) => (
+                <div key={group.label} className="sm:flex sm:gap-4">
+                  <dt className="mono w-32 shrink-0 text-[11px] uppercase tracking-wider text-faint">
+                    {group.label}
+                  </dt>
+                  <dd className="mono text-xs leading-relaxed text-dim">
+                    {group.items.join('  ')}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div>
+            <SectionHead label="commands" />
+            <p className="mono mt-3 text-xs text-faint">
+              This page has a prompt at the bottom. Everything it does is also a
+              click away.
+            </p>
+            <dl className="mono mt-2 grid gap-x-6 gap-y-1 text-xs sm:grid-cols-2">
+              {COMMANDS.map(([name, description]) => (
+                <div key={name} className="flex gap-2">
+                  <dt className="w-14 shrink-0 text-accent">{name}</dt>
+                  <dd className="text-dim">{description}</dd>
+                </div>
+              ))}
             </dl>
           </div>
 
@@ -384,6 +441,13 @@ export default function DiffPane({ view }: { view: View }) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div>
+            <SectionHead label="or write one here" />
+            <div className="mt-3">
+              <ContactForm />
+            </div>
           </div>
         </article>
       );
