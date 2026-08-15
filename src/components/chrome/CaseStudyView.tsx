@@ -48,7 +48,7 @@ export default function CaseStudyView({ project }: { project: Project }) {
       </section>
 
       <section className="space-y-3">
-        <SectionHead label="what surprised me" />
+        <SectionHead label="what the measurements showed" />
         <BlockList blocks={study.surprised} />
       </section>
 

@@ -8,8 +8,7 @@ export const roles: Role[] = [
     period: 'May 2025 - Ongoing',
     stack: ['Kernel PCA', 'NetworkX', 'Matplotlib'],
     bullets: [
-      'Co-authoring a paper that clusters 95-country signed networks into blocs, with data collected using LLMs and validated on UNGA and GDELT.',
-      "Found that a bloc's spatial isolation in this embedding predicts weaker outward cooperation (r = -0.84) across 1975-2025.",
+      'Looking at Geopolitical Networks and how countries cluster into blocs, and how that affects their cooperation with other blocs.',
     ],
   },
   {

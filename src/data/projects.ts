@@ -7,7 +7,7 @@ import type { Project } from './types';
  * Where the two disagreed the repo won; the trailing comments say where each
  * figure lives so a later edit can re-check it.
  */
-export const featured: Project[] = [
+const catalogue: Project[] = [
   {
     slug: 'shared-file-system',
     title: 'Shared File System',
@@ -59,7 +59,7 @@ export const featured: Project[] = [
         {
           kind: 'note',
           text:
-            'There is deliberately no throughput or latency figure here: the repo has no performance benchmark, so there is nothing honest to quote.',
+            'No throughput or latency figure appears here: the repo has no performance benchmark, so there is no measured number to quote.',
         },
       ],
       surprised: [
@@ -68,13 +68,13 @@ export const featured: Project[] = [
           finding: {
             suspected: 'per-sentence locking was the whole concurrency story',
             found:
-              'locking an entry and locking the structure that holds it are different problems. A lock protects a sentence\'s contents, but nothing stops the entry itself from being reclaimed underneath a holder - reference counting is what would actually close that gap, and the README says so rather than pretending otherwise.',
+              'locking an entry and locking the structure that holds it are different problems. A lock protects a sentence\'s contents, but nothing stops the entry itself from being reclaimed underneath a holder - reference counting is what closes that gap, and it is recorded as open work in the README.',
           },
         },
         {
           kind: 'prose',
           text:
-            'Two bugs in the git history came from the same root: a use-after-free in the access-request path, and a dead realloc branch beside it. Both were lifetime bugs, not synchronisation bugs, which is what pushed the limitation above into the README instead of out of sight.',
+            'Two bugs in the git history came from the same root: a use-after-free in the access-request path, and a dead realloc branch beside it. Both were lifetime bugs rather than synchronisation bugs, which is what identified the gap above as the one worth recording.',
         },
       ],
       limitations: [
@@ -158,7 +158,7 @@ export const featured: Project[] = [
         {
           kind: 'prose',
           text:
-            'That result also decided the honest way to report the headline speedup. The native-code comparison for the heavy signal is omitted entirely, because the optimizer collapses that loop and the ratio would be measuring the compiler rather than the VM.',
+            'That result also set how the headline speedup is reported. The native-code comparison for the heavy signal is omitted, because the optimizer collapses that loop and the ratio would be measuring the compiler rather than the VM.',
         },
       ],
       limitations: [
@@ -372,7 +372,7 @@ export const featured: Project[] = [
         {
           kind: 'note',
           text:
-            'One honest caveat, since the repo\'s own rules forbid hash shortcuts: stdlib hashlib appears in exactly two places - a truncated SHA-256 used as a deliberately weak toy hash for the birthday-attack experiment, and an optional toggle in the length-extension demo. Neither is a third-party dependency, and neither backs a primitive.',
+            'Scope note: stdlib hashlib appears in exactly two places - a truncated SHA-256 used as a deliberately weak toy hash for the birthday-attack experiment, and an optional toggle in the length-extension demo. Neither is a third-party dependency, and neither backs a primitive.',
         },
       ],
       surprised: [
@@ -392,10 +392,6 @@ export const featured: Project[] = [
       ],
     },
   },
-];
-
-/** Public, linked, but not given a case study. */
-export const other: Project[] = [
   {
     slug: 'c-shell',
     title: 'C-Shell',
@@ -416,12 +412,76 @@ export const other: Project[] = [
   },
   {
     slug: 'ews-financial-networks',
-    title: 'Early Warning Signals for Liquidity-Network Fragmentation',
+    title: 'Early Warning Signals for Liquidity Fragmentation',
     repoUrl: 'https://github.com/RaunakSeksaria/EWS-Financial-Networks',
-    stack: ['Python', 'PyTorch', 'PyTorch Geometric', 'NetworkX'],
+    stack: ['Python', 'PyTorch', 'PyTorch Geometric', 'NetworkX', 'SciPy'],
+    disclosure:
+      'Course project for Dynamical Processes in Complex Networks, built with two teammates. The write-up in final-results/ is committed to the repo.',
     summary:
-      'Reproduced a GIN-GRU tipping-point predictor from Physical Review X 14, 031009 (2024) on Wilson-Cowan dynamics, then designed an original inter-bank liquidity-fragmentation ODE model and trained the same predictor on it. The useful result was a negative one: window-level splitting had inflated R² to 0.68, and the honest simulation-level split gives 0.21 - so the no-leakage split is now an asserted test invariant.',
-    highlights: [],
+      'An inter-bank lending model where a slowly rising funding cost drives the network from an integrated state into a fragmented one, plus a spatio-temporal predictor that estimates where that tipping point sits before it is reached.',
+    highlights: [
+      'Built an inter-bank liquidity model in which each node holds a short-term liquidity buffer and network-mediated outflows are gated by three behavioural response functions: lender willingness, borrower credit risk, and a contagion multiplier.',
+      'Used the giant component of the thresholded active lending graph as the order parameter, so the critical funding cost is a measurable quantity per simulation rather than a label.',
+      'Validated the pipeline first by reproducing two published figures on a Wilson-Cowan system before applying it to the financial model.',
+    ],
+    caseStudy: {
+      problem:
+        'Most early-warning work tells you that a system is close to a tipping point without telling you where the tipping point is. For an inter-bank market the useful question is sharper: at what funding cost does lending stop being a connected market and fragment into isolated institutions?',
+      approach: [
+        {
+          kind: 'prose',
+          text:
+            'Each institution holds a scalar liquidity buffer. A slowly rising exogenous funding cost shrinks the inflow term, while local leakage and a cubic saturation term act on the buffer directly. The interesting part is the network term: outflows to a neighbour are gated by three sigmoidal response functions, one for whether the lender is willing to lend at all, one for how risky the borrower has become, and a multiplier that amplifies losses when a neighbour is already critically stressed.',
+        },
+        {
+          kind: 'bullets',
+          items: [
+            'The order parameter is structural, not statistical: at each step an active lending graph is built by thresholding effective edge weights, and the collapse of its giant component identifies the critical funding cost.',
+            'Swapping the sigmoids for Hill-type activation functions leaves both the transition location and the fragmentation pattern intact, which says the behaviour comes from the economic structure rather than the choice of curve.',
+            'The predictor is the architecture from Liu et al., Physical Review X 14, 031009 (2024): a graph isomorphism network over each snapshot, global pooling into one vector per step, a GRU across the observation window, and an MLP head regressing the critical value.',
+            'Before trusting it on the financial model, the pipeline was checked against that paper on a Wilson-Cowan system, reproducing both the connectivity collapse and the way anticipation accuracy varies with how far ahead you look.',
+          ],
+        },
+      ],
+      measured: [
+        {
+          kind: 'table',
+          table: {
+            columns: ['Configuration', 'Critical funding cost'],
+            rows: [
+              ['Full model, coupling and contagion', '0.565'],
+              ['Coupling only, contagion removed', '0.625'],
+              ['Full model, independent network seed', '0.563'],
+              ['No coupling', 'no fragmentation'],
+            ],
+            numeric: [1],
+            note:
+              'Ablation over the four configurations. Removing contagion pushes fragmentation substantially later, while regenerating the network with a different seed leaves it essentially unchanged, so the amplification mechanism matters more here than the particular graph drawn.',
+          },
+        },
+        {
+          kind: 'prose',
+          text:
+            'The transition itself is sharp rather than gradual. The giant component holds at full connectivity across a wide pre-critical range and then collapses discontinuously, and the derivative of the order parameter spikes at exactly that point.',
+        },
+      ],
+      surprised: [
+        {
+          kind: 'finding',
+          finding: {
+            suspected:
+              'a market crash could be modelled directly, taking the failure of a Cholesky factorisation on the correlation matrix as the signal that the system had broken',
+            found:
+              'the transition was barely visible, the graph structure became untrustworthy precisely when the failure occurred, and there was no ground truth to train against. Crashes are fat-tailed and rare enough that ordinary market dynamics never generate them. Moving to liquidity fragmentation fixed all three problems at once: the order parameter is observable throughout, and every simulation carries its own known critical value to learn from.',
+          },
+        },
+      ],
+      limitations: [
+        'Everything is synthetic. The model is calibrated against the shape of behaviour described in the contagion literature, not against real inter-bank data.',
+        'Predictions track the true critical value across simulations but with visible spread, driven by stochastic initial conditions and network heterogeneity.',
+        'No CI in this repo, and the tests are CPU smoke tests that assert the split invariant rather than a full evaluation suite.',
+      ],
+    },
   },
   {
     slug: 'buy-sell-rent',
@@ -444,4 +504,30 @@ export const other: Project[] = [
   },
 ];
 
-export const allProjects = [...featured, ...other];
+/**
+ * Which projects lead. Reordering the site is a one-line edit here rather than
+ * a move of seventy lines above; everything not listed falls to the second
+ * tier, in catalogue order.
+ */
+const FEATURED_SLUGS = [
+  'shared-file-system',
+  'bytecode-engine',
+  'ews-financial-networks',
+  'fraud-detection',
+  'minicrypt',
+] as const;
+
+export const featured: Project[] = FEATURED_SLUGS.map((slug) => {
+  const project = catalogue.find((entry) => entry.slug === slug);
+  if (!project) throw new Error(`Featured slug has no project: ${slug}`);
+  return project;
+});
+
+export const other: Project[] = catalogue.filter(
+  (project) => !FEATURED_SLUGS.some((slug) => slug === project.slug),
+);
+
+export const allProjects = catalogue;
+
+/** Anything with a case study gets its own page under /work. */
+export const casedProjects = catalogue.filter((project) => project.caseStudy);

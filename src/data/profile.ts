@@ -22,9 +22,14 @@ export const profile = {
   location: 'Kolkata, India',
 };
 
-/** Verifiable counts for the status bar. Update alongside the data below. */
+/**
+ * Counts shown on the overview. Each must be checkable by a reader who clicks
+ * through, so keep these in step with the data below and do not add a figure
+ * that cannot be counted on the site itself.
+ */
 export const stats = [
-  { label: 'repos', value: '10' }, // featured 5 + other 5, all public and linked
-  { label: 'negative results', value: '3' }, // dispatch study, sargable rewrite, GNNs vs XGBoost
+  // 5 featured + 5 other, plus Product-Labs and Parent_Diaries from the roles.
+  { label: 'public repositories', value: '12' },
+  { label: 'written up in depth', value: '5' },
   { label: 'merged MDN PR', value: '1' }, // mdn/content#37826
 ];

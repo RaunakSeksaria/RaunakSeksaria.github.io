@@ -4,10 +4,13 @@ import { profile } from '@/data/profile';
 /**
  * The title bar. Sticky rather than fixed, so it yields vertical space on a
  * phone once you start reading.
+ *
+ * Deliberately opaque rather than translucent-plus-blur: the design rules out
+ * glassmorphism, and an opaque bar reads more cleanly over dense text.
  */
 export default function IdentityBar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-rule bg-canvas/95 backdrop-blur-[2px]">
+    <header className="sticky top-0 z-30 border-b border-rule bg-canvas">
       {/*
         Fixed 48px tall from sm upwards so the sticky spine in Browser can offset
         against a known height rather than an approximation.

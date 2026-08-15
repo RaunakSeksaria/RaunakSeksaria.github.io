@@ -27,36 +27,28 @@ export function StackLine({ stack }: { stack: string[] }) {
 }
 
 /**
- * The signature element: what was expected against what the measurement said.
+ * A measured finding: the hypothesis going in, and what the numbers showed.
  *
- * The markers and labels are mono so it reads as a diff, but the text itself is
- * sans - these run to a few sentences, and mono prose at that length is work to
- * read. Colour is never the only signal; the -/+ glyphs carry it too.
+ * Deliberately not styled as a red/green diff. Stating a hypothesis and then a
+ * result is ordinary engineering practice, whereas +/- coding invites the reader
+ * to score one line as wrong. The labels are mono so it still reads as
+ * instrument output; the text is sans because these run to a few sentences and
+ * mono prose at that length is work to read.
  */
 export function Finding({ finding }: { finding: FindingType }) {
   return (
     <div className="overflow-hidden rounded border border-rule">
-      <div className="flex gap-3 border-b border-rule px-3 py-2.5">
-        <span aria-hidden="true" className="mono select-none text-del">
-          -
-        </span>
-        <p className="prose-block text-sm text-dim">
-          <span className="mono mr-2 text-xs uppercase tracking-wider text-del">
-            expected
-          </span>
-          {finding.suspected}
+      <div className="border-b border-rule px-3.5 py-3">
+        <p className="mono mb-1 text-[11px] uppercase tracking-[0.12em] text-faint">
+          hypothesis
         </p>
+        <p className="prose-block text-sm text-dim">{finding.suspected}</p>
       </div>
-      <div className="flex gap-3 px-3 py-2.5">
-        <span aria-hidden="true" className="mono select-none text-add">
-          +
-        </span>
-        <p className="prose-block text-sm text-ink">
-          <span className="mono mr-2 text-xs uppercase tracking-wider text-add">
-            measured
-          </span>
-          {finding.found}
+      <div className="px-3.5 py-3">
+        <p className="mono mb-1 text-[11px] uppercase tracking-[0.12em] text-accent">
+          what the measurement showed
         </p>
+        <p className="prose-block text-sm text-ink">{finding.found}</p>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { featured } from '@/data/projects';
+import { casedProjects } from '@/data/projects';
 import { profile } from '@/data/profile';
 import type { SpineGroup } from '@/data/timeline';
 import CaseStudyView from '@/components/chrome/CaseStudyView';
@@ -11,13 +11,13 @@ import StatusBar from '@/components/chrome/StatusBar';
 
 type Params = { slug: string };
 
-/** One static page per featured project; nothing else is routable here. */
+/** One static page per project that has a case study written for it. */
 export function generateStaticParams(): Params[] {
-  return featured.map((project) => ({ slug: project.slug }));
+  return casedProjects.map((project) => ({ slug: project.slug }));
 }
 
 export function generateMetadata({ params }: { params: Params }): Metadata {
-  const project = featured.find((candidate) => candidate.slug === params.slug);
+  const project = casedProjects.find((candidate) => candidate.slug === params.slug);
   if (!project) return {};
 
   const title = `${project.title} - ${profile.name}`;
@@ -29,11 +29,11 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-/** The spine on a case study navigates between the featured five. */
+/** The spine on a case study navigates between every written-up project. */
 const featuredGroups: SpineGroup[] = [
   {
-    label: 'featured work',
-    entries: featured.map((project) => ({
+    label: 'written up',
+    entries: casedProjects.map((project) => ({
       id: project.slug,
       label: project.title,
       href: `/work/${project.slug}/`,
@@ -43,7 +43,7 @@ const featuredGroups: SpineGroup[] = [
 ];
 
 export default function WorkPage({ params }: { params: Params }) {
-  const project = featured.find((candidate) => candidate.slug === params.slug);
+  const project = casedProjects.find((candidate) => candidate.slug === params.slug);
   if (!project) notFound();
 
   return (
